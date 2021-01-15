@@ -3,6 +3,7 @@
 cmake_minimum_required(VERSION 3.13.1)
 
 include($ENV{ZEPHYR_BASE}/cmake/app/boilerplate.cmake NO_POLICY_SCOPE)
+
 project(IoTPatch)
 
 set(IOTPATCH_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../PatchCore/)
@@ -21,11 +22,14 @@ file(GLOB iotpatchsrc
 
 list(REMOVE_ITEM iotpatchsrc "${IOTPATCH_DIR}/libebpf/src/main.c")
 
+include($ENV{ZEPHYR_BASE}/samples/net/common/common.cmake)
+
 include_directories(
         "${IOTPATCH_DIR}/"
         "${IOTPATCH_DIR}/hotpatch"
         "${IOTPATCH_DIR}/app"
         "${IOTPATCH_DIR}/libebpf"
+        "./src"
 )
 
 add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS)
