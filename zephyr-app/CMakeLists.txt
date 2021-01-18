@@ -30,8 +30,9 @@ include_directories(
         "${IOTPATCH_DIR}/app"
         "${IOTPATCH_DIR}/libebpf"
         "./src"
+        "$ENV{ZEPHYR_BASE}/subsys/net/ip"
 )
 
 add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS)
 
-target_sources(app PRIVATE ${iotpatchsrc} src/main.c)
+target_sources(app PRIVATE ${iotpatchsrc} src/main.c src/coap-server.c)

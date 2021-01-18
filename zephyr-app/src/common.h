@@ -60,6 +60,8 @@ int start_tcp(void);
 int process_tcp(void);
 void stop_tcp(void);
 
+void run_coap_server(void);
+
 #if defined(CONFIG_NET_VLAN)
 int init_vlan(void);
 #else
