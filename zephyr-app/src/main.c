@@ -20,5 +20,5 @@ void main(void)
 	//printk("Hello World! %s\n", CONFIG_BOARD);
 	k_thread_start(cli_thread);
 
-	run_coap_server();
+	// run_coap_server();
 }
