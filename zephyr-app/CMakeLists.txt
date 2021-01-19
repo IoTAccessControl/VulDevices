@@ -28,6 +28,6 @@ include_directories(
         "${IOTPATCH_DIR}/libebpf"
 )
 
-add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS)
+add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS -DDEV_NRF52840)
 
 target_sources(app PRIVATE ${iotpatchsrc} src/main.c)
