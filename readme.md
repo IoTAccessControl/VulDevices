@@ -19,3 +19,7 @@ zephyr源码修改：
 32行 # GTEXT(__debug_monitor)
 72行 # SECTION_SUBSEC_FUNC(TEXT,__fault,__debug_monitor)
 ```
+
+#### USB Mass Build 
+west build -b nrf52840_PCA10056 .  -- -DOVERLAY_CONFIG=overlay-usbmass.conf  
+windwos上需要使用libusbK驱动
