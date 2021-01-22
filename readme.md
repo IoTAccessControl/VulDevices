@@ -20,6 +20,13 @@ zephyr源码修改：
 72行 # SECTION_SUBSEC_FUNC(TEXT,__fault,__debug_monitor)
 ```
 
+#### Network Build
+west build -b nrf52840_PCA10056 .  -- -DOVERLAY_CONFIG=overlay-netusb.conf  
+west build -b stm32l475_my .  -- -DOVERLAY_CONFIG=overlay-netusb.conf  
+
 #### USB Mass Build 
 west build -b nrf52840_PCA10056 .  -- -DOVERLAY_CONFIG=overlay-usbmass.conf  
-windwos上需要使用libusbK驱动
+windwos上需要使用libusbK驱动  
+
+windows下查看gbk错误信息：  
+s.encode("latin1").decode("gbk")  

@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import usb.core
 import struct
 import time
@@ -61,8 +63,10 @@ def hexdump(data):
         print(line)
 
 def load_backend():
-    from usb.backend import libusb1
-    return libusb1.get_backend()
+    from usb.backend import libusb1, libusb0
+    backend = libusb1.get_backend()
+    # backend = libusb0.get_backend()
+    return backend
 
 # class Device:
 #     NRF52840 = 1
@@ -71,11 +75,12 @@ def main():
     backend = None
     is_win32 = os.name == 'nt'
 
-    is_nrf52840 = True
+    is_nrf52840 = False
 
     if is_win32:
        backend = load_backend()
     global END_POINT
+    print(backend)
     if is_nrf52840:
         END_POINT = NRF52840_ENDPOINT
         dev = usb.core.find(idVendor=0x2fe3, idProduct=0x0100, backend=backend)
@@ -92,9 +97,10 @@ def main():
                         dev.detach_kernel_driver(intf.bInterfaceNumber)
                     except usb.core.USBError as e:
                         raise RuntimeError("detach_kernel_driver")
-    
-    data = perf_test(dev)
-    hexdump(data)
+    dev.write(END_POINT["write"], b"0x00")
+    print(dev.read(END_POINT["read"]), 0x10)
+    # data = perf_test(dev)
+    # hexdump(data)
 
 if __name__ == "__main__":
     main()
