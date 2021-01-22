@@ -2,6 +2,9 @@ import usb.core
 import struct
 import time
 
+filesize = []
+timeused = []
+
 def p32(x):
     return struct.pack("<I", x)
 
@@ -12,34 +15,40 @@ def p8(x):
     return struct.pack("<B", x)
 
 def perf_test(dev):
-    for i in range(100):
-        cb = p8(0xAA) + p8(0) + p32b(0) + p32b(1)
-        cbw = b"USBC" + p32(0x11223344) + p32(0x200) + p8(0) + p8(0) \
-            + p8(len(cb)) + cb
+    for i in range(10):
+        tic = time.perf_counter()
+        for j in range(100):
+            cb = p8(0xAA) + p8(0) + p32b(0) + p32b(1)
+            cbw = b"USBC" + p32(0x11223344) + p32(0x200) + p8(0) + p8(0) \
+                + p8(len(cb)) + cb
 
-        cbw += b"\x00" * (31 - len(cbw))
-        dev.write(1, cbw)
+            cbw += b"\x00" * (31 - len(cbw))
+            dev.write(1, cbw)
 
-        dev.write(1, b"\x00" * 0x200)
+            dev.write(1, b"\x00" * 0x200)
 
-        # time.sleep(0.1)
+            # time.sleep(0.1)
 
-        dev.clear_halt(1)
+            dev.clear_halt(1)
 
-        dev.read(0x81, 0x40)
+            dev.read(0x81, 0x40)
+            
+            dev.ctrl_transfer(0x20, 0xFF, 0, 0)
+            
+            cb = p8(0xA8) + p8(0) + p32b(0) + p32b(1)
+            cbw = b"USBC" + p32(0x11223344) + p32(0x200) + p8(0x80) + p8(0) \
+                + p8(len(cb)) + cb
+
+            cbw += b"\x00" * (31 - len(cbw))
+            dev.write(1, cbw)
+            data = bytes(dev.read(0x81, 0x200))
+
+            dev.read(0x81, 0x40)
+        toc = time.perf_counter()
+        interval = toc - tic
+        filesize.append(i + 1)
+        timeused.append(interval)
         
-        dev.ctrl_transfer(0x20, 0xFF, 0, 0)
-        
-        cb = p8(0xA8) + p8(0) + p32b(0) + p32b(1)
-        cbw = b"USBC" + p32(0x11223344) + p32(0x200) + p8(0x80) + p8(0) \
-            + p8(len(cb)) + cb
-
-        cbw += b"\x00" * (31 - len(cbw))
-        dev.write(1, cbw)
-        data = bytes(dev.read(0x81, 0x200))
-
-        dev.read(0x81, 0x40)
-
     return data
 
 def hexdump(data):
@@ -66,6 +75,9 @@ def main():
     
     data = perf_test(dev)
     hexdump(data)
+    with open("data/perf_usbmass_without_patch.txt", "w", encoding= "utf-8") as ofile:
+        for i in range(len(filesize)):
+            ofile.write(str(filesize[i]) + " " + str(timeused[i]) + "\n")
 
 if __name__ == "__main__":
     main()
