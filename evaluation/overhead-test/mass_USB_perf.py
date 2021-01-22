@@ -97,10 +97,10 @@ def main():
                         dev.detach_kernel_driver(intf.bInterfaceNumber)
                     except usb.core.USBError as e:
                         raise RuntimeError("detach_kernel_driver")
-    dev.write(END_POINT["write"], b"0x00")
-    print(dev.read(END_POINT["read"]), 0x10)
-    # data = perf_test(dev)
-    # hexdump(data)
+    # dev.write(END_POINT["write"], b"0x00")
+    # print(dev.read(END_POINT["read"]), 0x10)
+    data = perf_test(dev)
+    hexdump(data)
 
 if __name__ == "__main__":
     main()

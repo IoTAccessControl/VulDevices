@@ -21,6 +21,9 @@ zephyr源码修改：
 ```
 
 #### Network Build
+echo server:  
+west build -b stm32l475_my samples/net/sockets/echo_server --  -DOVERLAY_CONFIG=overlay-netusb.conf  
+
 west build -b nrf52840_PCA10056 .  -- -DOVERLAY_CONFIG=overlay-netusb.conf  
 west build -b stm32l475_my .  -- -DOVERLAY_CONFIG=overlay-netusb.conf  
 
