@@ -75,7 +75,7 @@ def main():
     backend = None
     is_win32 = os.name == 'nt'
 
-    is_nrf52840 = False
+    is_nrf52840 = True
 
     if is_win32:
        backend = load_backend()
