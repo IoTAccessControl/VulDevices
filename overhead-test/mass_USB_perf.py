@@ -18,6 +18,7 @@ def perf_test(dev):
     for i in range(10):
         tic = time.perf_counter()
         for j in range(100):
+            print("hhh")
             cb = p8(0xAA) + p8(0) + p32b(0) + p32b(1)
             cbw = b"USBC" + p32(0x11223344) + p32(0x200) + p8(0) + p8(0) \
                 + p8(len(cb)) + cb
@@ -66,6 +67,7 @@ def main():
     dev = usb.core.find(idVendor=0x2fe3, idProduct=0x0100)
 
     for cfg in dev:
+        print(cfg)
         for intf in cfg:
             if dev.is_kernel_driver_active(intf.bInterfaceNumber):
                 try:
