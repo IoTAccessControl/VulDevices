@@ -18,7 +18,15 @@
 #include "hotpatch/include/profiling.h"
 
 #include "app/ihp_cli.h"
+
+#ifdef DEV_COAP
 #include "common.h"
+#endif
+
+#ifdef DEV_MQTT
+#include "config.h"
+#endif
+
 
 K_THREAD_DEFINE(cli_thread, STACK_SIZE,
 	run_shell_cli, NULL, NULL, NULL,
@@ -34,7 +42,14 @@ void main(void)
 	profile_add_event("micro profile dynamic start");
 	profile_add_event("micro profile fixed start");
 
-	// run_coap_server();
+	#ifdef DEV_COAP
+	run_coap_server();
+	#endif
+
+	#ifdef DEV_MQTT
+	run_mqtt_subscriber();
+	#endif
+
 	start_patch_service();
 	load_fixed_patch_0();
 
