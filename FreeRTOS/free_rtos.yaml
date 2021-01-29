@@ -1,0 +1,49 @@
+FreeRTOS:
+- lib/FreeRTOS/*.c
+- lib/FreeRTOS/portable/keil-m4/port.c
+- lib/FreeRTOS/portable/keil-m4/portmacro.h
+- lib/FreeRTOS/portable/keil-m4/heap_5.c
+#- lib/FreeRTOS/portable/keil-m4/mpu_wrappers.c
+- lib/include/FreeRTOS.h
+- lib/include/message_buffer.h
+- lib/include/queue.h
+- lib/include/semphr.h
+- lib/include/stream_buffer.h
+- lib/include/task.h
+- lib/include/timers.h
+- lib/include/private/list.h
+- lib/include/private/portable.h
+- lib/include/private/projdefs.h
+- lib/include/private/deprecated_definitions.h
+#- lib/include/private/mpu_wrappers.h
+- lib/include/private/stack_macros.h
+
+
+MyAPP:
+- app/config/*.h
+- app/config/*.c
+
+FreeRTOSTCP:
+- lib/FreeRTOS-Plus-TCP/include/*.h
+- lib/FreeRTOS-Plus-TCP/source/*.c
+- lib/FreeRTOS-Plus-TCP/source/portable/keil-stm32/*.c
+- lib/FreeRTOS-Plus-TCP/source/portable/keil-stm32/*.c
+
+
+INCLUDE:
+- lib/FreeRTOS/portable/keil-m4/
+- lib/include/private/
+- lib/include
+- lib/FreeRTOS-Plus-TCP/include
+- lib/FreeRTOS-Plus-TCP/source/portable/keil-stm32
+- app/config
+
+DEFINE:
+# arch: SYS_CORTEX_M4 SYS_RISCV_32
+- SYS_CORTEX_M4
+# OS: NRF52_NO_OS ZEPHYR_OS STM32L475_NO_OS
+- STM32L475_NO_OS
+# devices: DEV_NRF52840 DEV_STM32L475 DEV_STM32F429
+- DEV_STM32L475
+# ide
+- USE_KEIL
