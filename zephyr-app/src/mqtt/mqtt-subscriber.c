@@ -530,7 +530,7 @@ static void poll_mqtt(void)
 	int rc;
 
 	while (connected) {
-		rc = wait(500); // Will this be too long?
+		rc = wait(1); // Will this be too long?
 		// LOG_INF("rc = %d", rc);
 		if (rc > 0) {
 			// LOG_INF("inputing");

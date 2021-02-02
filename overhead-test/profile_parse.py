@@ -52,11 +52,17 @@ def profile_parse(filename):
             ebpf_times.append(times[i + 1])
             out_times.append(times[i + 2])
 
+    print("Switch in cycles")
     print(get_info(in_cycles))
+    print("eBPF cycles")
     print(get_info(ebpf_cycles))
+    print("Switch out cycles")
     print(get_info(out_cycles))
+    print("Switch in time")
     print(get_info(in_times))
+    print("eBPF time")
     print(get_info(ebpf_times))
+    print("Switch out time")
     print(get_info(out_times))
 
 profile_parse("data/nrf52840_dynamic_micro_profile.txt")

@@ -11,7 +11,6 @@ def callback(pkt):
     # print("h")
     global tic
     global toc
-    
     if pkt.haslayer(TCP):
         if pkt.haslayer(MQTTPublish):
             tic = time.perf_counter()
