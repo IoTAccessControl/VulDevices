@@ -27,9 +27,17 @@ west build -b stm32l475_my samples/net/sockets/echo_server --  -DOVERLAY_CONFIG=
 west build -b nrf52840_PCA10056 .  -- -DOVERLAY_CONFIG=overlay-netusb.conf  
 west build -b stm32l475_my .  -- -DOVERLAY_CONFIG=overlay-netusb.conf  
 
+Flash:  
+nrfjprog -f nrf52 --program E:\PaperWork\IoT\OS\IoTPatch\VulDevices\zephyr-app\build\zephyr\zephyr.hex --sectorerase --reset  
+
+
 #### USB Mass Build 
 west build -b nrf52840_PCA10056 .  -- -DOVERLAY_CONFIG=overlay-usbmass.conf  
 windwos上需要使用libusbK驱动  
 
 windows下查看gbk错误信息：  
 s.encode("latin1").decode("gbk")  
+
+arm-none-eabi-objdump -S IoTPatch.axf > IoTPatch.list
+
+arm-none-eabi-gdb

@@ -1,6 +1,7 @@
 import usb.core
 import struct
 import time
+import os
 
 filesize = []
 timeused = []
@@ -62,9 +63,21 @@ def hexdump(data):
     if line:
         print(line)
 
+def load_backend():
+    from usb.backend import libusb1, libusb0
+    backend = libusb1.get_backend()
+    # backend = libusb0.get_backend()
+    print(backend)
+    return backend
+
 def main():
-    dev = usb.core.find(idVendor=0x2fe3, idProduct=0x0100)
+    # use libusb-win32 in Windows
     is_win32 = os.name == 'nt'
+    backend = None
+    if is_win32:
+        backend = load_backend()
+
+    dev = usb.core.find(idVendor=0x2fe3, idProduct=0x0100, backend=backend)
 
     if not is_win32:
         for cfg in dev:
@@ -77,9 +90,9 @@ def main():
     
     data = perf_test(dev)
     hexdump(data)
-    with open("data/perf_usbmass_without_patch.txt", "w", encoding= "utf-8") as ofile:
-        for i in range(len(filesize)):
-            ofile.write(str(filesize[i]) + " " + str(timeused[i]) + "\n")
+    # with open("data/perf_usbmass_without_patch.txt", "w", encoding= "utf-8") as ofile:
+    #     for i in range(len(filesize)):
+    #         ofile.write(str(filesize[i]) + " " + str(timeused[i]) + "\n")
 
 if __name__ == "__main__":
     main()
