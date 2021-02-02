@@ -29,10 +29,21 @@ include_directories(
         "${IOTPATCH_DIR}/hotpatch"
         "${IOTPATCH_DIR}/app"
         "${IOTPATCH_DIR}/libebpf"
-        "./src"
+        # "./src/mqtt"
+        "./src/coap"
         "$ENV{ZEPHYR_BASE}/subsys/net/ip"
 )
 
+<<<<<<< HEAD
 add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS -DDEV_NRF52840)
+=======
+# add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS)
+# add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS -DDEV_STM32F429)
+add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS -DDEV_NRF52840 -DDEV_COAP)
+# add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS -DDEV_STM32F429 -DDEV_MQTT)
+# add_definitions(-DSYS_CORTEX_M4 -DZEPHYR_OS -DDEV_NRF52840)
+>>>>>>> 95d6a9712cdb2b17ef266e36dfaa7326130ccc40
 
-target_sources(app PRIVATE ${iotpatchsrc} src/main.c src/coap-server.c)
+target_sources(app PRIVATE ${iotpatchsrc} src/main.c src/coap/coap-server.c)
+# target_sources(app PRIVATE ${iotpatchsrc} src/main.c src/mqtt/mqtt-subscriber.c)
+# target_sources(app PRIVATE ${iotpatchsrc} src/main.c)
