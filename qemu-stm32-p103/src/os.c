@@ -8,15 +8,15 @@
 #define __NAKE __attribute__((naked))
 #define __NOIST __attribute__((no_instrument_function))
 
-void __attribute__((no_instrument_function, naked)) 
-restore_context() {
-	__asm__ __volatile__("BX lr");
-}
+// void __attribute__((no_instrument_function, naked)) 
+// restore_context() {
+// 	__asm__ __volatile__("BX lr");
+// }
 
 void __attribute__((no_instrument_function))
 _patch_dispatch(uint32_t *ctx) {
 	my_printf("_patch_dispatch: %p\n", ctx);
-	restore_context();
+	// restore_context();
 	print_str("after _patch_dispatch\n");
 }
 
@@ -48,13 +48,38 @@ bool my_func_test(int a, int b, int c) {
 	return true;
 }
 
+#include "ihp_cli.h"
+#include "hotpatch/include/ebpf_test.h"
+
 void main(void)
 {
 	usart_init();
-	bool res = my_func_test(500, 1000, 2000);
-	print_str("Is bug fixed? ");
-	print_str(res ? "yes": "no");
-	print_str("\n");
+	// bool res = my_func_test(500, 1000, 2000);
+	// print_str("Is bug fixed? ");
+	// print_str(res ? "yes": "no");
+	print_str("Start Qemu Test\n");
 	// jit_run_test();
+
+	// typedef bool (*myfunc) (int a, int b, int c);
+	// myfunc func = my_func_test;
+	// func(1, 2, 3);
+
+	// run_shell_cli();
+	//run_test_by_id(3);
+	// float t = 1.5;
+	// my_printf("%f\n", t);
+	// 12 6
+	run_ebpf_eva(6);
+
+	while (true) {
+		char c = uart_getchar();
+		char str[5] = {0};
+		str[0] = c;
+		my_printf("char uart_get_char(): %s %d\n", str, c);
+		if (c == 'q') {
+			break;
+		}
+	}
+	print_str("Looping...\n");
 	while (1);
 }

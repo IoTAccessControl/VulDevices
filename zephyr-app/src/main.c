@@ -27,6 +27,48 @@
 #include "config.h"
 #endif
 
+
+K_THREAD_DEFINE(cli_thread, STACK_SIZE,
+	run_shell_cli, NULL, NULL, NULL,
+	THREAD_PRIORITY, 0, K_FOREVER);
+
+static void load_fixed_patch_0(void);
+static void ebpf_test();
+extern void arm_core_mpu_disable();
+void main(void)
+{
+
+	console_init();
+	//printk("Hello World! %s\n", CONFIG_BOARD);
+	k_thread_start(cli_thread);
+
+	//run_coap_server();
+	profile_add_event("micro profile dynamic start");
+	profile_add_event("micro profile fixed start");
+	profile_add_event("uart print profile start");
+	profile_add_event("eBPF exec time evaluation start");
+
+	#ifdef DEV_COAP
+	// run_coap_server();
+	#endif
+
+	#ifdef DEV_MQTT
+	// run_mqtt_subscriber();
+	#endif
+
+	#define USE_JIT
+	#ifdef USE_JIT
+	// disable mpu
+	arm_core_mpu_disable();
+	// https://lists.zephyrproject.org/g/users/topic/random_fault_exception/30793151?p=
+	// CONFIG_NO_OPTIMIZATIONS=y
+	#endif
+
+	// ebpf_test();
+}
+
+//------------------------------------------------------
+// ebpf code evaluation
 static uint8_t fixed_patch_0[64] = ""
 "\x01\x00\x38\x00\x00\x00\x00\x00\x61\x11\x04\x00\x00\x00\x00\x00\x67\x01\x00\x00\x20\x00\x00\x00\xc7"
 "\x01\x00\x00\x20\x00\x00\x00\xb7\x00\x00\x00\x01\x00\x00\x00\x65\x01\x01\x00\x13\x00\x00\x00\xb7\x00"
@@ -218,35 +260,7 @@ ebpf_patch *get_patch(uint8_t *patch_bytes, int pkt_len) {
 	return patch;
 }
 
-K_THREAD_DEFINE(cli_thread, STACK_SIZE,
-	run_shell_cli, NULL, NULL, NULL,
-	THREAD_PRIORITY, 0, K_FOREVER);
-
-static void load_fixed_patch_0(void);
-
-void main(void)
-{
-
-	console_init();
-	//printk("Hello World! %s\n", CONFIG_BOARD);
-	k_thread_start(cli_thread);
-
-<<<<<<< HEAD
-	//run_coap_server();
-=======
-	profile_add_event("micro profile dynamic start");
-	profile_add_event("micro profile fixed start");
-	profile_add_event("uart print profile start");
-	profile_add_event("eBPF exec time evaluation start");
-
-	#ifdef DEV_COAP
-	// run_coap_server();
-	#endif
-
-	#ifdef DEV_MQTT
-	// run_mqtt_subscriber();
-	#endif
-
+void ebpf_test() {
 	start_patch_service();
 	load_fixed_patch_0();
 
@@ -455,6 +469,5 @@ static void load_fixed_patch_0(void) {
 	patch_desc *patch = (patch_desc*) (paylod.pkt);
 	DEBUG_LOG("packet size: %d patch type:%d code_len:%d addr:0x%08x\n", pkt_len, patch->type, patch->code_len, patch->inst_addr);
 	notify_new_patch(patch);
->>>>>>> 95d6a9712cdb2b17ef266e36dfaa7326130ccc40
 }
 

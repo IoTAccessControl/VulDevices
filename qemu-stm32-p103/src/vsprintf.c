@@ -99,6 +99,8 @@ __NOIST int vsnprintf(char *str, size_t size, const char *format, va_list ap)
                 pad_char = '0';
                 pad_count = 8;
                 goto print_hex;
+            case 'f': // ignore
+                break;
             case 'd':
             print_dec:
                 itoa_base(va_arg(ap, unsigned int), itoa_buf, 10);

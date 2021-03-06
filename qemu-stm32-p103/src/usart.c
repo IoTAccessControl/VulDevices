@@ -34,8 +34,9 @@ usart_init()
  * set when that data is transferred to the TDR
  */
 #define USART_FLAG_TXE	((uint16_t) 0x0080)
+#define USART_FLAG_RXNE ((uint16_t) 0x0020)
 
-void __NOIST
+__NOIST void
 print_str(const char *str)
 {
     if (!is_init) return;
@@ -44,6 +45,16 @@ print_str(const char *str)
 		*(USART2_DR) = (*str & 0xFF);
 		str++;
 	}
+}
+
+__NOIST void uart_putchar(char c) {
+    while (!(*(USART2_SR) & USART_FLAG_TXE));
+	*(USART2_DR) = (c & 0xFF);
+}
+
+__NOIST char uart_getchar() {
+	while (!(*(USART2_SR) & USART_FLAG_RXNE));
+	return (*USART2_DR & (uint16_t) 0x01FF);
 }
 
 

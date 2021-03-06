@@ -55,27 +55,45 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 SET(CMAKE_GENERATOR "Unix Makefiles")
 project(arm-start VERSION 0.1 LANGUAGES C ASM)
 
+set(IOTPATCH_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../PatchCore/)
 
 
-# set(CMAKE_C_FLAGS -fno-common -ffreestanding -O0 -gdwarf-2 -g3 -Wall -Werror -mcpu=cortex-m3 -mthumb -Wl,-Tstart.ld -nostartfiles CACHE INTERNAL "C compiler flags")
+# set(CMAKE_C_FLAGS -fno-common -ffreestanding -O0 -gdwarf-2 -g3 -Wall -Werror -mcpu=cortex-m4 -mthumb -Wl,-Tstart.ld -nostartfiles CACHE INTERNAL "C compiler flags")
 
 message("PROJECT DIR:" ${PROJECT_SOURCE_DIR})
+
+file(GLOB iotpatchsrc
+        "${IOTPATCH_DIR}/hotpatch/include/*.h"
+        "${IOTPATCH_DIR}/hotpatch/src/*.c"
+        "${IOTPATCH_DIR}/app/*.h"
+        "${IOTPATCH_DIR}/app/*.c"
+        "${IOTPATCH_DIR}/libebpf/include/*.h"
+        "${IOTPATCH_DIR}/libebpf/src/*.c")
+
+list(REMOVE_ITEM iotpatchsrc "${IOTPATCH_DIR}/libebpf/src/main.c")
 
 file(GLOB ARM_SRC
     ${PROJECT_SOURCE_DIR}/src/*.c
 )
 set(EXECUTABLE ${PROJECT_NAME}.elf)
 
-include_directories("${PROJECT_SOURCE_DIR}/src/")
+include_directories("${PROJECT_SOURCE_DIR}/src/"
+    "${IOTPATCH_DIR}/"
+    "${IOTPATCH_DIR}/hotpatch"
+    "${IOTPATCH_DIR}/app"
+    "${IOTPATCH_DIR}/libebpf"
+)
 
-add_executable(${EXECUTABLE} ${ARM_SRC})
+add_executable(${EXECUTABLE} ${ARM_SRC} ${iotpatchsrc})
+
+add_definitions(-DSYS_CORTEX_M4 -DDEV_QEMU)
 
 target_compile_options(${EXECUTABLE} PRIVATE
         -mcpu=cortex-m4
         -mthumb
         -mfpu=fpv4-sp-d16
         -mfloat-abi=hard
-
+        -g3 
         -fdata-sections
         -ffunction-sections
 
@@ -94,7 +112,7 @@ target_link_options(${EXECUTABLE} PRIVATE
         -lc
         -lm
         -lnosys
-        -Wl,-Map=${PROJECT_NAME}.map,--cref
+        -Wl,-Map=${PROJECT_NAME}.map,--cref,--print-memory-usage
         -Wl,--gc-sections
         )
 
@@ -106,8 +124,21 @@ add_custom_command(TARGET ${EXECUTABLE}
 # Create hex file
 add_custom_command(TARGET ${EXECUTABLE}
         POST_BUILD
-        COMMAND arm-none-eabi-objcopy -O ihex ${EXECUTABLE} ${PROJECT_NAME}.hex
-        COMMAND arm-none-eabi-objcopy -O binary ${EXECUTABLE} ${PROJECT_NAME}.bin)
+        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE} ${PROJECT_NAME}.hex
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE} ${PROJECT_NAME}.bin
+        COMMAND ${CMAKE_OBJDUMP} -S ${EXECUTABLE} > ${PROJECT_NAME}.list
+    )
 
 add_custom_target(qemu 
-    COMMAND qemu-system-arm -M stm32-p103 -semihosting -nographic -kernel ${PROJECT_NAME}.bin)
+    COMMAND make
+    COMMAND qemu-system-arm -M stm32-p103 -semihosting -nographic -kernel ${PROJECT_NAME}.bin
+    )
+
+add_custom_target(debug
+    COMMAND make
+    COMMAND qemu-system-arm -M stm32-p103 -semihosting -nographic -kernel ${PROJECT_NAME}.bin -s -S
+    )
+
+add_custom_target(gdb
+    COMMAND arm-none-eabi-gdb ${PROJECT_NAME}.elf -ex "target remote:1234"
+    )
